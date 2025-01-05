@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terminal Miibotzz</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background-color: #0f0f0f;
+      color: #00ff00;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      display: flex;
+      flex: 1;
+      position: relative;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .terminal {
+      width: 100%;
+      max-width: 900px;
+      height: 90%;
+      background: #111;
+      border: 2px solid #00ff00;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0px 0px 15px #00ff00;
+    }
+
+    .header {
+      text-align: center;
+      padding: 10px;
+      border-bottom: 2px solid #00ff00;
+      background: #0a0a0a;
+      font-size: 1.5rem;
+      color: #00ff00;
+    }
+
+    .output {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      font-size: 1.2rem;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .input-wrapper {
+      border-top: 2px solid #00ff00;
+      padding: 10px;
+      background: #0a0a0a;
+      display: flex;
+      align-items: center;
+    }
+
+    .input {
+      width: 100%;
+      padding: 10px;
+      font-size: 1.2rem;
+      font-family: 'Courier New', monospace;
+      color: #00ff00;
+      background: #0f0f0f;
+      border: 2px solid #00ff00;
+      border-radius: 5px;
+      outline: none;
+    }
+
+    .input:focus {
+      border-color: #ffff00;
+    }
+
+    .qris-image {
+      width: 100px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .qris-image:hover {
+      transform: scale(1.5);
+    }
+
+    .redirect-button {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #00ff00;
+      color: #0f0f0f;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .redirect-button:hover {
+      background-color: #00cc00;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="terminal">
+      <div class="header">Terminal Miibotzz</div>
+      <div class="output" id="output"></div>
+      <div class="input-wrapper">
+        <input type="text" class="input" id="userInput" placeholder="Ketik perintah di sini..." autofocus onkeydown="handleInput(event)">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const output = document.getElementById('output');
+    const userInput = document.getElementById('userInput');
+
+    const welcomeMessages = [
+      "Selamat datang di terminal Miibotzz!",
+      "Ketik 'help' untuk melihat daftar perintah."
+    ];
+    let messageIndex = 0;
+
+    function showWelcomeMessage() {
+      if (messageIndex < welcomeMessages.length) {
+        appendTypingEffect(welcomeMessages[messageIndex], () => {
+          messageIndex++;
+          showWelcomeMessage();
+        });
+      }
+    }
+
+    function handleInput(event) {
+      if (event.key === 'Enter') {
+        const command = userInput.value.trim().toLowerCase();
+        if (command) processCommand(command);
+        userInput.value = '';
+      }
+    }
+
+    function processCommand(command) {
+      appendOutput(`$ ${command}`);
+      setTimeout(() => {
+        executeCommand(command);
+      }, 1000);
+    }
+
+    function executeCommand(command) {
+      if (command === 'help') {
+        appendTypingEffect('Daftar perintah:');
+        appendTypingEffect('  • .chat wa miibotzz.py');
+        appendTypingEffect('  • .masuk grup tele.py');
+        appendTypingEffect('  • .donasi.py');
+      } else if (command === '.chat wa miibotzz.py') {
+        appendTypingEffect('Menghubungkan ke WhatsApp Miibotzz...');
+        redirectTo('https://wa.me/6283837273287');
+      } else if (command === '.masuk grup tele.py') {
+        appendTypingEffect('Menghubungkan ke grup Telegram...');
+        redirectTo('https://t.me/+-3wUhBBjEdBlNmI1');
+      } else if (command === '.donasi.py') {
+        appendTypingEffect('Nomor Dana untuk Donasi: 083804078766');
+        appendTypingEffect('Klik QRIS di bawah untuk donasi:');
+        const qrisImage = document.createElement('img');
+        qrisImage.src = 'https://d.top4top.io/p_3292mv3950.jpg';
+        qrisImage.classList.add('qris-image');
+        qrisImage.onclick = () => {
+          window.open(qrisImage.src, '_blank');
+        };
+        output.appendChild(qrisImage);
+
+        appendTypingEffect('Setelah tf bisa klik tombol di bawah"');
+        appendButton();
+      } else if (command === 'kirim bukti.py') {
+        appendTypingEffect('Menghubungkan ke WhatsApp untuk kirim bukti...');
+        redirectTo('https://wa.me/6283837273287?text=Saya%20sudah%20melakukan%20donasi.%20Berikut%20bukti%20saya.');
+      } else {
+        appendTypingEffect(`Perintah tidak dikenal: ${command}`);
+      }
+    }
+
+    function appendOutput(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function appendTypingEffect(text, callback = null) {
+      const div = document.createElement('div');
+      output.appendChild(div);
+      let index = 0;
+
+      const typingInterval = setInterval(() => {
+        div.textContent += text[index];
+        index++;
+        if (index === text.length) {
+          clearInterval(typingInterval);
+          if (callback) callback();
+        }
+        output.scrollTop = output.scrollHeight;
+      }, 50);
+    }
+
+    function appendButton() {
+      const button = document.createElement('button');
+      button.textContent = 'Kirim Bukti';
+      button.classList.add('redirect-button');
+      button.onclick = () => {
+        window.location.href = 'https://wa.me/6283837273287?text=Saya%20sudah%20melakukan%20donasi.%20Berikut%20bukti%20saya.';
+      };
+      output.appendChild(button);
+    }
+
+    function redirectTo(url) {
+      setTimeout(() => {
+        appendTypingEffect(`Mengarahkan ke: ${url}`);
+        window.location.href = url;
+      }, 1000);
+    }
+
+    showWelcomeMessage();
+  </script>
+</body>
+</html>
